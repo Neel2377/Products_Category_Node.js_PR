@@ -1,0 +1,63 @@
+<%- include('../partials/header') %>
+
+<div class="page-wrapper">
+  <div class="container-fluid">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <% if (category) { %>
+            <!-- Form to edit category -->
+            <form method="POST" action="/category/edit/<%= category._id %>" enctype="multipart/form-data">
+              <div class="card-body">
+                <h4 class="card-title">Edit Category</h4>
+
+                <!-- Name -->
+                <div class="form-group row mb-3">
+                  <label for="name" class="col-sm-3 text-end control-label col-form-label">Name:</label>
+                  <div class="col-sm-9">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="name"
+                      name="name"
+                      value="<%= category.name %>"
+                      placeholder="Enter Category Name"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <!-- Image -->
+                <div class="form-group row mb-3">
+                  <label for="image" class="col-sm-3 text-end control-label col-form-label">Image:</label>
+                  <div class="col-sm-9">
+                    <% if (category.image) { %>
+                      <img 
+                        src="<%= category.image %>" 
+                        alt="Category Image" 
+                        style="width:100px; height:100px; object-fit:cover; margin-bottom:10px;">
+                    <% } %>
+                    <input type="file" class="form-control" id="image" name="image" accept="image/*" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Buttons -->
+              <div class="border-top">
+                <div class="card-body d-flex justify-content-evenly">
+                  <button type="submit" class="btn btn-primary">Update Category</button>
+                  <a href="/category/view-category" class="btn btn-secondary">Cancel</a>
+                </div>
+              </div>
+            </form>
+          <% } else { %>
+            <p class="text-center">Category not found.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+

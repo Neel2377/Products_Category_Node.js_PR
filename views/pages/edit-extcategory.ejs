@@ -1,0 +1,62 @@
+<%- include('../partials/header') %>
+
+<div class="page-wrapper">
+  <div class="container-fluid">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <% if (extcategory) { %>
+            <form method="POST" action="/extcategory/edit/<%= extcategory._id %>" enctype="multipart/form-data">
+              <div class="card-body">
+                <h4 class="card-title">Edit Extra-Category</h4>
+
+                <!-- Name -->
+                <div class="form-group row mb-3">
+                  <label for="name" class="col-sm-3 text-end control-label col-form-label">Name:</label>
+                  <div class="col-sm-9">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="name"
+                      name="name"
+                      value="<%= extcategory.name %>"
+                      placeholder="Enter Category Name"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <!-- Image -->
+                <div class="form-group row mb-3">
+                  <label for="image" class="col-sm-3 text-end control-label col-form-label">Image:</label>
+                  <div class="col-sm-9">
+                    <% if (extcategory.image) { %>
+                      <img 
+                        src="<%= extcategory.image %>" 
+                        alt="ExtraCategory Image" 
+                        style="width:100px; height:100px; object-fit:cover; margin-bottom:10px;">
+                    <% } %>
+                    <input type="file" class="form-control" id="image" name="image" accept="image/*" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Buttons -->
+              <div class="border-top">
+                <div class="card-body d-flex justify-content-evenly">
+                  <button type="submit" class="btn btn-primary">Update Extra-Category</button>
+                  <a href="/extcategory/view-extcategory" class="btn btn-secondary">Cancel</a>
+                </div>
+              </div>
+            </form>
+          <% } else { %>
+            <p class="text-center">Category not found.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+</div>
+
+

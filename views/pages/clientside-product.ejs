@@ -1,0 +1,194 @@
+<%- include('../partials/header') %>
+
+<div class="page-wrapper">
+  <div class="page-breadcrumb">
+    <div class="row">
+      <div class="col-12 d-flex no-block align-items-center">
+        <h4 class="page-title">Products</h4>
+        <div class="ms-auto text-end">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Clientside Products</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <style>
+        .product-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+          gap: 25px;
+        }
+
+        .product-card {
+          display: flex;
+          flex-direction: column;
+          background: #fff;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          height: 100%;
+        }
+
+        .product-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .product-image {
+          width: 100%;
+          height: 220px;
+          /* Adjust as you like */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #f9f9f9;
+          /* optional: to fill empty space */
+        }
+
+        .product-image img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+          /* show full image */
+        }
+
+
+        .product-info {
+          flex: 1;
+          /* Fills remaining card height */
+          padding: 15px;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .product-title {
+          font-size: 1.2rem;
+          margin: 0 0 10px;
+          color: #111;
+        }
+
+        .product-price {
+          font-size: 1.1rem;
+          color: #e63946;
+          margin: 0 0 10px;
+        }
+
+        .product-description {
+          font-size: 0.95rem;
+          color: #555;
+          margin-bottom: 10px;
+
+          /* Truncate description after 3 lines */
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          line-clamp: 3;
+          -webkit-box-orient: vertical;
+        }
+
+        .product-meta {
+          font-size: 0.85rem;
+          color: #666;
+          margin-bottom: 5px;
+        }
+
+        .product-actions {
+          margin-top: auto;
+          /* Push buttons to bottom */
+          display: flex;
+          gap: 10px;
+        }
+
+        .btn-custom {
+          flex: 1;
+          padding: 8px 12px;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          background: #007bff;
+          color: #fff;
+          font-size: 0.9rem;
+          transition: background 0.2s ease;
+        }
+
+        .btn-custom:hover {
+          background: #0056b3;
+        }
+
+        .btn-outline-custom {
+          background: transparent;
+          border: 1px solid #007bff;
+          color: #007bff;
+        }
+
+        .btn-outline-custom:hover {
+          background: #007bff;
+          color: #fff;
+        }
+
+        .no-data-custom {
+          text-align: center;
+          font-size: 1.2rem;
+          color: #888;
+        }
+      </style> 
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Clientside Products</h4>
+
+            <% if (!products || products.length === 0) { %>
+              <p class="no-data-custom">No products available.</p>
+            <% } else { %>
+              <div class="product-grid">
+                <% products.forEach(product => { %>
+                  <div class="product-card">
+                    <div class="product-image">
+                      <% if (product.image) { %>
+                        <img src="<%= product.image %>" alt="<%= product.title %>">
+                      <% } else { %>
+                        <span>No Image</span>
+                      <% } %>
+                    </div>
+                    <div class="product-info">
+                      <h2 class="product-title"><%= product.title %></h2>
+                      <p class="product-price fw-bold">₹<%= product.price %></p>
+                      <p class="product-description"><%= product.description %></p>
+
+                      <% if (product.category) { %>
+                        <p class="product-meta fw-bold text-primary">Category: <%= product.category.name %></p>
+                      <% } %>
+                      <% if (product.subcategory) { %>
+                        <p class="product-meta fw-bold text-success">Subcategory: <%= product.subcategory.name %></p>
+                      <% } %>
+                      <% if (product.extcategory) { %>
+                        <p class="product-meta fw-bold text-warning">Extcategory: <%= product.extcategory.name %></p>
+                      <% } %>
+
+                      <div class="product-actions my-3">
+                        <button class="btn-custom">Add to Cart</button>
+                        <button class="btn-custom btn-outline-custom">View Details</button>
+                      </div>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+            <% } %>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</div>
