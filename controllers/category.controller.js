@@ -1,6 +1,5 @@
 const Category = require("../models/categorySchema");
-const cloudinary = require("../configs/cloudinary"); // <- use your Cloudinary config
-const fs = require("fs");
+const cloudinary = require("../configs/cloudinary"); 
 
 // Show Add Category Page
 exports.addCategoryPage = (req, res) => res.render("pages/add-category");
@@ -12,18 +11,12 @@ exports.addCategory = async (req, res) => {
     let imageId = "";
 
     if (req.file) {
-      // Upload to Cloudinary
-      const result = await cloudinary.uploader.upload(req.file.path, { folder: "categories" });
-      imageUrl = result.secure_url;
-      imageId = result.public_id;
-
-      // Only delete local file saved by multer
-      if (fs.existsSync(req.file.path)) {
-        fs.unlinkSync(req.file.path);
-      }
+      // multer-storage-cloudinary already uploaded
+      imageUrl = req.file.path;       // Cloudinary URL
+      imageId = req.file.filename;    // Cloudinary public_id
     }
 
-    await Category.create({ ...req.body, image: imageUrl, imageId: imageId });
+    await Category.create({ ...req.body, image: imageUrl, imageId });
     console.log("Category Added.");
     return res.redirect("/category/view-category");
   } catch (error) {
@@ -31,7 +24,6 @@ exports.addCategory = async (req, res) => {
     return res.redirect("/category/add-category");
   }
 };
-
 
 // View Categories
 exports.viewCategoryPage = async (req, res) => {
@@ -59,13 +51,13 @@ exports.editCategory = async (req, res) => {
 
     if (req.file) {
       const category = await Category.findById(id);
-      if (category.imageId) await cloudinary.uploader.destroy(category.imageId);
+      if (category.imageId) {
+        await cloudinary.uploader.destroy(category.imageId);
+      }
 
-      const result = await cloudinary.uploader.upload(req.file.path, { folder: "categories" });
-      updateData.image = result.secure_url;
-      updateData.imageId = result.public_id;
-
-      fs.unlinkSync(req.file.path); // delete local file
+      // New image info from multer-storage-cloudinary
+      updateData.image = req.file.path;       // Cloudinary URL
+      updateData.imageId = req.file.filename; // Cloudinary public_id
     }
 
     await Category.findByIdAndUpdate(id, updateData, { new: true });

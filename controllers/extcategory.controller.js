@@ -1,6 +1,5 @@
 const Extcategory = require("../models/extcategorySchema");
-const cloudinary = require("../configs/cloudinary"); // <- correct Cloudinary SDK
-const fs = require("fs");
+const cloudinary = require("../configs/cloudinary");
 
 // Show Add Extra Category Page
 exports.addExtcategoryPage = (req, res) => res.render("pages/add-extcategory");
@@ -11,15 +10,14 @@ exports.addExtcategory = async (req, res) => {
     let imageUrl = "";
     let imageId = "";
 
-    if (req.file && req.file.path) {
-      const result = await cloudinary.uploader.upload(req.file.path, { folder: "extcategories" });
-      imageUrl = result.secure_url;
-      imageId = result.public_id;
-
-      if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+    if (req.file) {
+      // multer-storage-cloudinary already uploaded
+      imageUrl = req.file.path;       // Cloudinary URL
+      imageId = req.file.filename;    // Cloudinary public_id
     }
 
     await Extcategory.create({ name: req.body.name, image: imageUrl, imageId });
+    console.log("Extcategory Added.");
     res.redirect("/extcategory/view-extcategory");
   } catch (err) {
     console.error("Error adding Extra Category:", err.message);
@@ -51,15 +49,17 @@ exports.editExtcategory = async (req, res) => {
     const { id } = req.params;
     const updateData = { name: req.body.name };
 
-    if (req.file && req.file.path) {
+    if (req.file) {
       const extcategory = await Extcategory.findById(id);
-      if (extcategory.imageId) await cloudinary.uploader.destroy(extcategory.imageId);
 
-      const result = await cloudinary.uploader.upload(req.file.path, { folder: "extcategories" });
-      updateData.image = result.secure_url;
-      updateData.imageId = result.public_id;
+      // Delete old Cloudinary image
+      if (extcategory.imageId) {
+        await cloudinary.uploader.destroy(extcategory.imageId);
+      }
 
-      if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+      // New image info from multer-storage-cloudinary
+      updateData.image = req.file.path;       // Cloudinary URL
+      updateData.imageId = req.file.filename; // Cloudinary public_id
     }
 
     await Extcategory.findByIdAndUpdate(id, updateData, { new: true });
@@ -76,7 +76,11 @@ exports.deleteExtcategory = async (req, res) => {
   try {
     const { id } = req.params;
     const extcategory = await Extcategory.findByIdAndDelete(id);
-    if (extcategory && extcategory.imageId) await cloudinary.uploader.destroy(extcategory.imageId);
+
+    if (extcategory && extcategory.imageId) {
+      await cloudinary.uploader.destroy(extcategory.imageId);
+    }
+
     console.log("Extcategory Deleted.");
     return res.redirect("/extcategory/view-extcategory");
   } catch (error) {

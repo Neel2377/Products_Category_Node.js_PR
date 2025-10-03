@@ -1,6 +1,5 @@
 const Subcategory = require("../models/subcategorySchema");
-const cloudinary = require("../configs/cloudinary"); // <-- Use your Cloudinary config here
-const fs = require("fs");
+const cloudinary = require("../configs/cloudinary"); // Cloudinary config
 
 // Show Add Subcategory Page
 exports.addSubcategoryPage = (req, res) => res.render("pages/add-subcategory");
@@ -11,21 +10,13 @@ exports.addSubcategory = async (req, res) => {
     let imageUrl = "";
     let imageId = "";
 
-    // Only attempt to upload & delete if a file exists locally
-    if (req.file && req.file.path) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "subcategories",
-      });
-      imageUrl = result.secure_url;
-      imageId = result.public_id;
-
-      // Delete local file after upload
-      if (fs.existsSync(req.file.path)) {
-        fs.unlinkSync(req.file.path);
-      }
+    if (req.file) {
+      // multer-storage-cloudinary already uploads to Cloudinary
+      imageUrl = req.file.path;       // Cloudinary URL
+      imageId = req.file.filename;    // Cloudinary public_id
     }
 
-    await Subcategory.create({ ...req.body, image: imageUrl, imageId: imageId });
+    await Subcategory.create({ ...req.body, image: imageUrl, imageId });
     console.log("Subcategory Added.");
     return res.redirect("/subcategory/view-subcategory");
   } catch (error) {
@@ -65,15 +56,15 @@ exports.editSubcategory = async (req, res) => {
 
     if (req.file) {
       const subcategory = await Subcategory.findById(id);
+
+      // Delete old image from Cloudinary
       if (subcategory.imageId) {
         await cloudinary.uploader.destroy(subcategory.imageId);
       }
 
-      const result = await cloudinary.uploader.upload(req.file.path, { folder: "subcategories" });
-      updateData.image = result.secure_url;
-      updateData.imageId = result.public_id;
-
-      fs.unlinkSync(req.file.path); // Delete local file
+      // Use new uploaded image info directly
+      updateData.image = req.file.path;       // Cloudinary URL
+      updateData.imageId = req.file.filename; // Cloudinary public_id
     }
 
     await Subcategory.findByIdAndUpdate(id, updateData, { new: true });
@@ -90,9 +81,11 @@ exports.deleteSubcategory = async (req, res) => {
   try {
     const { id } = req.params;
     const subcategory = await Subcategory.findByIdAndDelete(id);
+
     if (subcategory && subcategory.imageId) {
       await cloudinary.uploader.destroy(subcategory.imageId);
     }
+
     console.log("Subcategory Deleted.");
     return res.redirect("/subcategory/view-subcategory");
   } catch (error) {

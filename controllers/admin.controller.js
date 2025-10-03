@@ -1,9 +1,8 @@
-const fs = require("fs");
 const Product = require("../models/productSchema");
-const cloudinary = require("../configs/cloudinary");
 const Category = require("../models/categorySchema");
 const Subcategory = require("../models/subcategorySchema");
 const Extcategory = require("../models/extcategorySchema");
+const cloudinary = require("../configs/cloudinary");
 
 // Show Add Product Page
 exports.addproductPage = async (req, res) => {
@@ -15,14 +14,14 @@ exports.addproductPage = async (req, res) => {
     res.render("pages/addproduct", {
       categories,
       subcategories,
-      extcategories
+      extcategories,
     });
   } catch (err) {
     console.error(err.message);
     res.render("pages/addproduct", {
       categories: [],
       subcategories: [],
-      extcategories: []
+      extcategories: [],
     });
   }
 };
@@ -33,13 +32,10 @@ exports.addproduct = async (req, res) => {
     let imageUrl = "";
     let imageId = "";
 
-    if (req.file && req.file.path) {
-      const result = await cloudinary.uploader.upload(req.file.path, { folder: "products" });
-      imageUrl = result.secure_url;
-      imageId = result.public_id;
-
-      // Delete local file only if it exists
-      if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+    if (req.file) {
+      // multer-storage-cloudinary already uploads, just use its info
+      imageUrl = req.file.path;        // Cloudinary URL
+      imageId = req.file.filename;     // Cloudinary public_id
     }
 
     await Product.create({ ...req.body, image: imageUrl, imageId });
@@ -49,7 +45,6 @@ exports.addproduct = async (req, res) => {
     res.redirect("back");
   }
 };
-
 
 // Show View Products Page
 exports.viewproductPage = async (req, res) => {
@@ -72,13 +67,12 @@ exports.editProductPage = async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (!product) return res.redirect("/viewproduct");
 
-    res.render("pages/editproduct", { product }); // path matches views/pages/edit-product.ejs
+    res.render("pages/editproduct", { product });
   } catch (err) {
     console.error(err.message);
     res.redirect("/viewproduct");
   }
 };
-
 
 // Handle Edit Product
 exports.editProduct = async (req, res) => {
@@ -89,19 +83,14 @@ exports.editProduct = async (req, res) => {
     let updateData = { ...req.body };
 
     if (req.file) {
-      // Delete old image
+      // Delete old image from Cloudinary
       if (product.imageId) {
         await cloudinary.uploader.destroy(product.imageId);
       }
 
-      // Upload new image
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "products",
-      });
-      updateData.image = result.secure_url;
-      updateData.imageId = result.public_id;
-
-      fs.unlinkSync(req.file.path);
+      // Use new uploaded file directly
+      updateData.image = req.file.path;       // Cloudinary URL
+      updateData.imageId = req.file.filename; // Cloudinary public_id
     }
 
     await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });

@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const adminCtl = require("../controllers/admin.controller"); // path must be correct
-const imageUpload = require("../middlewares/upload"); // Multer + Cloudinary
+const upload = require("../middlewares/upload"); 
 const router = Router();
 
 router.get("/", (req, res) => {
@@ -9,12 +9,12 @@ router.get("/", (req, res) => {
 
 // Products
 router.get("/addproduct", adminCtl.addproductPage);
-router.post("/addproduct", imageUpload.single("image"), adminCtl.addproduct);
+router.post("/addproduct", upload.single("image"), adminCtl.addproduct);
 
 router.get("/viewproduct", adminCtl.viewproductPage);
 
 router.get("/edit/:id", adminCtl.editProductPage);
-router.post("/edit/:id", imageUpload.single("image"), adminCtl.editProduct);
+router.post("/edit/:id", upload.single("image"), adminCtl.editProduct);
 
 // Delete product
 router.get("/delete/:id", adminCtl.deleteProduct);
