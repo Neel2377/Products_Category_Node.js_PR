@@ -1,24 +1,115 @@
 <%- include('../partials/header') %>
+
 <style>
-    .flex-cell {
-      display: flex;
-      align-items: center;
-      gap: 5px;
+  .flex-cell {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .img-thumb {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+
+  .img-product {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+  }
+
+  /* Responsive Table Wrapper */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Responsive adjustments for smaller screens */
+  @media (max-width: 768px) {
+    .img-product {
+      width: 70px;
+      height: 70px;
     }
 
     .img-thumb {
-      width: 40px;
-      height: 40px;
-      object-fit: cover;
-      border-radius: 4px;
+      width: 30px;
+      height: 30px;
     }
 
-    .img-product {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
+    .table thead {
+      font-size: 14px;
     }
-  </style>
+
+    .table tbody td {
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    .flex-cell span {
+      font-size: 13px;
+    }
+
+    .btn {
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .page-title {
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .table thead {
+      display: none;
+    }
+
+    .table,
+    .table tbody,
+    .table tr,
+    .table td {
+      display: block;
+      width: 100%;
+    }
+
+    .table tr {
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .table td {
+      text-align: left;
+      padding-left: 50%;
+      position: relative;
+      font-size: 14px;
+    }
+
+    .table td::before {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 45%;
+      white-space: nowrap;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .table td:nth-of-type(1)::before { content: "#"; }
+    .table td:nth-of-type(2)::before { content: "Title"; }
+    .table td:nth-of-type(3)::before { content: "Image"; }
+    .table td:nth-of-type(4)::before { content: "Price"; }
+    .table td:nth-of-type(5)::before { content: "Description"; }
+    .table td:nth-of-type(6)::before { content: "Category"; }
+    .table td:nth-of-type(7)::before { content: "Subcategory"; }
+    .table td:nth-of-type(8)::before { content: "ExtraCategory"; }
+    .table td:nth-of-type(9)::before { content: "Actions"; }
+  }
+</style>
 
 <div class="page-wrapper">
   <div class="page-breadcrumb">
@@ -31,118 +122,94 @@
 
   <div class="container-fluid">
     <% if (!products || products.length===0) { %>
-    <p class="text-center mt-4">No products available.</p>
+      <p class="text-center mt-4">No products available.</p>
     <% } else { %>
-    <table class="table table-bordered table-striped table-responsive align-middle text-center">
-      <thead class="table-dark">
-        <tr>
-          <th class="text-white">#</th>
-          <th class="text-white">Title</th>
-          <th class="text-white">Product Image</th>
-          <th class="text-white">Price</th>
-          <th class="text-white">Description</th>
-          <th class="text-white">Category</th>
-          <th class="text-white">Subcategory</th>
-          <th class="text-white">ExtraCategory</th>
-          <th class="text-white">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% products.forEach((prod, index)=> { %>
-        <tr>
-          <td>
-            <%= index + 1 %>
-          </td>
-          <td>
-            <%= prod.title %>
-          </td>
-          <td>
-            <% if (prod.image) { %>
-            <img src="<%= prod.image %>" alt="<%= prod.title %>"
-              class="img-product"
-              style="width:100px;height:100px;object-fit:cover;border:2px solid #ccc;border-radius:8px;padding:2px;box-shadow:0 2px 6px rgba(0,0,0,0.2);transition:transform 0.2s;"
-              onmouseover="this.style.transform='scale(1.05)'"
-              onmouseout="this.style.transform='scale(1)'">
-            <% } else { %>
-            No Image
-            <% } %>
-          </td>
-          <td>₹<%= prod.price %>
-          </td>
-          <td>
-            <%= prod.description %>
-          </td>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle text-center">
+          <thead class="table-dark">
+            <tr>
+              <th class="text-white">#</th>
+              <th class="text-white">Title</th>
+              <th class="text-white">Product Image</th>
+              <th class="text-white">Price</th>
+              <th class="text-white">Description</th>
+              <th class="text-white">Category</th>
+              <th class="text-white">Subcategory</th>
+              <th class="text-white">ExtraCategory</th>
+              <th class="text-white">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% products.forEach((prod, index)=> { %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td><%= prod.title %></td>
+                <td>
+                  <% if (prod.image) { %>
+                    <img src="<%= prod.image %>" alt="<%= prod.title %>" class="img-product"
+                      style="border:2px solid #ccc;border-radius:8px;padding:2px;box-shadow:0 2px 6px rgba(0,0,0,0.2);transition:transform 0.2s;"
+                      onmouseover="this.style.transform='scale(1.05)'"
+                      onmouseout="this.style.transform='scale(1)'">
+                  <% } else { %> No Image <% } %>
+                </td>
+                <td>₹<%= prod.price %></td>
+                <td><%= prod.description %></td>
 
-          <!-- Category -->
-          <td>
-            <% if (prod.category) { %>
-            <div class="flex-cell">
-              <% if (prod.category.image) { %>
-              <img src="<%= prod.category.image %>"
-                alt="<%= prod.category.name %>" class="img-thumb"
-                style="width:40px;height:40px;object-fit:cover;border-radius:6px;border:1px solid #aaa;box-shadow:0 1px 4px rgba(0,0,0,0.2);padding:2px;transition:transform 0.2s;"
-                onmouseover="this.style.transform='scale(1.1)'"
-                onmouseout="this.style.transform='scale(1)'">
-              <% } %>
-              <span>
-                <%= prod.category.name %>
-              </span>
-            </div>
-            <% } else { %>
-            N/A
-            <% } %>
-          </td>
+                <!-- Category -->
+                <td>
+                  <% if (prod.category) { %>
+                    <div class="flex-cell">
+                      <% if (prod.category.image) { %>
+                        <img src="<%= prod.category.image %>" alt="<%= prod.category.name %>" class="img-thumb"
+                          style="border:1px solid #aaa;box-shadow:0 1px 4px rgba(0,0,0,0.2);padding:2px;transition:transform 0.2s;"
+                          onmouseover="this.style.transform='scale(1.1)'"
+                          onmouseout="this.style.transform='scale(1)'">
+                      <% } %>
+                      <span><%= prod.category.name %></span>
+                    </div>
+                  <% } else { %> N/A <% } %>
+                </td>
 
-          <td>
-            <% if (prod.subcategory) { %>
-            <div class="flex-cell">
-              <% if (prod.subcategory.image) { %>
-              <img src="<%= prod.subcategory.image %>"
-                alt="<%= prod.subcategory.name %>" class="img-thumb"
-                style="width:40px;height:40px;object-fit:cover;border-radius:6px;border:1px solid #aaa;box-shadow:0 1px 4px rgba(0,0,0,0.2);padding:2px;transition:transform 0.2s;"
-                onmouseover="this.style.transform='scale(1.1)'"
-                onmouseout="this.style.transform='scale(1)'">
-              <% } %>
-              <span>
-                <%= prod.subcategory.name %>
-              </span>
-            </div>
-            <% } else { %>
-            N/A
-            <% } %>
-          </td>
+                <td>
+                  <% if (prod.subcategory) { %>
+                    <div class="flex-cell">
+                      <% if (prod.subcategory.image) { %>
+                        <img src="<%= prod.subcategory.image %>" alt="<%= prod.subcategory.name %>" class="img-thumb"
+                          style="border:1px solid #aaa;box-shadow:0 1px 4px rgba(0,0,0,0.2);padding:2px;transition:transform 0.2s;"
+                          onmouseover="this.style.transform='scale(1.1)'"
+                          onmouseout="this.style.transform='scale(1)'">
+                      <% } %>
+                      <span><%= prod.subcategory.name %></span>
+                    </div>
+                  <% } else { %> N/A <% } %>
+                </td>
 
-          <td>
-            <% if (prod.extcategory) { %>
-            <div class="flex-cell">
-              <% if (prod.extcategory.image) { %>
-              <img src="<%= prod.extcategory.image %>"
-                alt="<%= prod.extcategory.name %>" class="img-thumb"
-                style="width:40px;height:40px;object-fit:cover;border-radius:6px;border:1px solid #aaa;box-shadow:0 1px 4px rgba(0,0,0,0.2);padding:2px;transition:transform 0.2s;"
-                onmouseover="this.style.transform='scale(1.1)'"
-                onmouseout="this.style.transform='scale(1)'">
-              <% } %>
-              <span>
-                <%= prod.extcategory.name %>
-              </span>
-            </div>
-            <% } else { %>
-            N/A
-            <% } %>
-          </td>
+                <td>
+                  <% if (prod.extcategory) { %>
+                    <div class="flex-cell">
+                      <% if (prod.extcategory.image) { %>
+                        <img src="<%= prod.extcategory.image %>" alt="<%= prod.extcategory.name %>" class="img-thumb"
+                          style="border:1px solid #aaa;box-shadow:0 1px 4px rgba(0,0,0,0.2);padding:2px;transition:transform 0.2s;"
+                          onmouseover="this.style.transform='scale(1.1)'"
+                          onmouseout="this.style.transform='scale(1)'">
+                      <% } %>
+                      <span><%= prod.extcategory.name %></span>
+                    </div>
+                  <% } else { %> N/A <% } %>
+                </td>
 
-          <td>
-            <a href="/edit/<%= prod._id %>"
-              class="btn btn-sm btn-warning">Edit</a>
-            <a href="/delete/<%= prod._id %>" class="btn btn-sm btn-danger"
-              onclick="return confirm('Delete this product?')">Delete</a>
-          </td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
+                <td>
+                  <a href="/edit/<%= prod._id %>" class="btn btn-sm btn-warning">Edit</a>
+                  <a href="/delete/<%= prod._id %>" class="btn btn-sm btn-danger"
+                    onclick="return confirm('Delete this product?')">Delete</a>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
     <% } %>
   </div>
+
   <%- include('../partials/footer') %>
 </div>
-

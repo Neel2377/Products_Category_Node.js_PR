@@ -1,5 +1,95 @@
 <%- include('../partials/header') %>
 
+<style>
+  /* Make table horizontally scrollable on smaller screens */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Adjust image and text sizes for tablets */
+  @media (max-width: 768px) {
+    img {
+      width: 70px !important;
+      height: 70px !important;
+    }
+
+    th, td {
+      font-size: 14px;
+    }
+
+    .btn {
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+
+    .page-title {
+      font-size: 20px;
+    }
+  }
+
+  /* Convert table to card layout on very small screens */
+  @media (max-width: 480px) {
+    .table thead {
+      display: none;
+    }
+
+    .table,
+    .table tbody,
+    .table tr,
+    .table td {
+      display: block;
+      width: 100%;
+    }
+
+    .table tr {
+      margin-bottom: 15px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 10px;
+    }
+
+    .table td {
+      text-align: left;
+      padding-left: 50%;
+      position: relative;
+      border: none;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    .table td::before {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 45%;
+      white-space: nowrap;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .table td:nth-of-type(1)::before { content: "#"; }
+    .table td:nth-of-type(2)::before { content: "Image"; }
+    .table td:nth-of-type(3)::before { content: "Subcategory"; }
+    .table td:nth-of-type(4)::before { content: "Action"; }
+
+    img {
+      width: 80px !important;
+      height: 80px !important;
+      display: block;
+      margin: 5px 0;
+    }
+
+    .btn {
+      margin-top: 5px;
+      width: 48%;
+      display: inline-block;
+    }
+  }
+</style>
+
 <div class="page-wrapper">
   <div class="page-breadcrumb">
     <div class="row">
@@ -24,46 +114,54 @@
           <div class="card-body">
             <h5 class="card-title mb-0">View Sub-Categories</h5>
           </div>
-          <table class="table table-bordered table-hover table-responsive text-center align-middle">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Image</th>
-                <th scope="col">Subcategory</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% if(subcategories && subcategories.length > 0){ %>
-                <% subcategories.forEach((subcategory, index) => { %>
-                  <tr>
-                    <th scope="row"><%= index + 1 %></th>
-                    <td>
-                      <% if(subcategory.image){ %>
-                        <img src="<%= subcategory.image %>" alt="<%= subcategory.name %>" style="width:100px;height:100px;object-fit:cover;border-radius:6px;border:1px solid #ccc;box-shadow:0 2px 6px rgba(0,0,0,0.2);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                      <% } else { %>
-                        N/A
-                      <% } %>
-                    </td>
-                    <td><%= subcategory.name %></td>
-                    <td>
-                      <a href="/subcategory/delete/<%= subcategory._id %>" class="btn btn-danger">Delete</a>
-                      <a href="/subcategory/edit/<%= subcategory._id %>" class="btn btn-warning">Edit</a>
-                    </td>
-                  </tr>
-                <% }) %>
-              <% } else { %>
+
+          <!-- Responsive table wrapper -->
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover text-center align-middle">
+              <thead class="table-dark">
                 <tr>
-                  <td colspan="4">No subcategories found.</td>
+                  <th scope="col" class="text-white">#</th>
+                  <th scope="col" class="text-white">Image</th>
+                  <th scope="col" class="text-white">Subcategory</th>
+                  <th scope="col" class="text-white">Action</th>
                 </tr>
-              <% } %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <% if(subcategories && subcategories.length > 0){ %>
+                  <% subcategories.forEach((subcategory, index) => { %>
+                    <tr>
+                      <td><%= index + 1 %></td>
+                      <td>
+                        <% if(subcategory.image){ %>
+                          <img src="<%= subcategory.image %>" 
+                               alt="<%= subcategory.name %>" 
+                               style="width:100px;height:100px;object-fit:cover;border-radius:6px;border:1px solid #ccc;box-shadow:0 2px 6px rgba(0,0,0,0.2);transition:transform 0.2s;"
+                               onmouseover="this.style.transform='scale(1.05)'"
+                               onmouseout="this.style.transform='scale(1)'">
+                        <% } else { %>
+                          N/A
+                        <% } %>
+                      </td>
+                      <td><%= subcategory.name %></td>
+                      <td>
+                        <a href="/subcategory/delete/<%= subcategory._id %>" class="btn btn-danger btn-sm">Delete</a>
+                        <a href="/subcategory/edit/<%= subcategory._id %>" class="btn btn-warning btn-sm">Edit</a>
+                      </td>
+                    </tr>
+                  <% }) %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="4">No subcategories found.</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </div>
     </div>
   </div>
+
   <%- include('../partials/footer') %>
 </div>
-
-
